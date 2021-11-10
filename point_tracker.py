@@ -2,19 +2,19 @@ from transaction import Transaction
 from linked_list import LinkedList
 from exceptions import NegativePointException
 
+# Point tracking class that is implemented by app.py
 class PointTracker:
 
+    # Default constructor
     def __init__(self):
-        # data structure for transactions
+        # Linked list for containing transaction order
         self._transactions = LinkedList()
 
-        # dict of payer and total
+        # Dictionary storing updated payer and point totals
         self._payer_totals = {}  # payer: total points
     
-    # add transaction
+    # Add transaction to linked list and update dictionary
     def add_transaction(self, transaction):
-
-        #update payer totals
         if transaction.get_payer() in self._payer_totals:
             if transaction.get_points() + self._payer_totals[transaction.get_payer()] < 0:
                 raise NegativePointException()
@@ -28,7 +28,9 @@ class PointTracker:
                 self._payer_totals[transaction.get_payer()] = transaction.get_points()
                 self._transactions.insert(transaction)
 
-    # spend points
+    # Spend points by iterating through transaction linked list until
+    # the amount of points are spent, then update payer totals dictionary
+    # and return the transaction order dictionary
     def spend(self, points):
         if int(points) > self.total():
             raise NegativePointException()
@@ -57,34 +59,19 @@ class PointTracker:
                 if remaining == 0:
                     break
                 
-        # return transaction order
+        # Return transaction order for spent points
         order_list = []
         for payer in order:
             order_list.append({"payer": payer, "points": order[payer]})
         return order_list
 
-    # return payers and their total points
+    # Return payers and their total points
     def balance(self):       
         return self._payer_totals
 
-    # return aggregate point total
+    # Return aggregate point total
     def total(self):
         total = 0
         for i in self._payer_totals.values():
             total += i
         return total
-
-# pt = PointTracker()
-# t1 = Transaction("DANNON", 1000, "2020-11-02T14:00:00Z" )
-# t2 = Transaction("UNILEVER", 200, "2020-10-31T11:00:00Z")
-# t3 = Transaction("DANNON", -200, "2020-10-31T15:00:00Z")
-# # t4 = Transaction("MILLER COORS", 10000, "2020-11-01T14:00:00Z")
-# # t5 = Transaction("DANNON", 300, "2020-10-31T10:00:00Z")
-# pt.add_transaction(t1)
-# pt.add_transaction(t2)
-# pt.add_transaction(t3)
-# # pt.add_transaction(t4)
-# # pt.add_transaction(t5)
-# pt._transactions.list()
-# print(pt.spend(5000))
-# print(pt.balance())

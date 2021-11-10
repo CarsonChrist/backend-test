@@ -9,10 +9,7 @@ app = Flask(__name__)
 
 point_tracker = PointTracker()
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-
+# POST route to add a transaction
 @app.route("/transaction", methods = ["post"])
 def add_transaction():
     transaction = Transaction(request.values.get("payer"), int(request.values.get("points")), request.values.get("timestamp"))
@@ -22,6 +19,8 @@ def add_transaction():
         return str(e), 400
     return "" 
 
+# POST route to spend points
+# returns the payers and points spent
 @app.route("/spend", methods = ["post"])
 def spend():
     try:
@@ -30,6 +29,7 @@ def spend():
         return str(e), 400
     return json.dumps(order_list)
 
+# GET route to return balance of payers and their total points
 @app.route("/balance")
 def balance():    
     return point_tracker.balance()
